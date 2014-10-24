@@ -1,0 +1,24 @@
+---
+- name: jenkins - configure a jenkins host
+  hosts: all
+
+  vars:
+    jenkins_plugins:
+      - "github"
+    jenkins_proxy: "nginx"
+    jenkins_proxy_hostname: "{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
+
+  pre_tasks:
+    - name: vagrant - increase /run partition size
+      mount:
+        fstype: 'tmpfs'
+        name: '/run'
+        src: 'tmpfs'
+        opts: 'remount,size=500MB'
+        state: mounted
+      sudo: yes
+
+  roles:
+    - { role: Stouts.nginx,   sudo: yes, tags: ['backshop_nginx'] }
+    - { role: Stouts.jenkins, sudo: yes, tags: ['backshop_jenkins'] }
+
