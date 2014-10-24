@@ -5,17 +5,23 @@
   vars:
     jenkins_plugins:
       - "github"
+      - "ansicolor"
+      - "tap"
     jenkins_proxy: "nginx"
     jenkins_proxy_hostname: "{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
 
   pre_tasks:
     - name: vagrant - increase /run partition size
       mount:
-        fstype: 'tmpfs'
-        name: '/run'
-        src: 'tmpfs'
-        opts: 'remount,size=500MB'
+        fstype: tmpfs
+        name: /run
+        src: tmpfs
+        opts: 'rw,noexec,nosuid,nodev,size=204857600,mode=0755'
         state: mounted
+      sudo: yes
+
+    - name: vagrant - remount /run
+      command: mount /run -o remount
       sudo: yes
 
   roles:
